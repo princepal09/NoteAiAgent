@@ -4,7 +4,7 @@ import { env } from "../../lib/constants";
 interface JWTUser {
   id: string;
   email: string;
-  username : string
+  name: string;
 }
 
 export const generateAccessToken = (user: JWTUser): string => {
@@ -15,6 +15,6 @@ export const generateAccessToken = (user: JWTUser): string => {
 
 export const generateRefreshToken = (payload: object): string => {
   return jwt.sign(payload, env.JWT_TOKEN_REFRESH_SECRET, {
-    expiresIn: env.REFRESH_TOKEN_EXPIRY as  SignOptions["expiresIn"],
+    expiresIn: env.REFRESH_TOKEN_EXPIRY as SignOptions["expiresIn"],
   });
 };
