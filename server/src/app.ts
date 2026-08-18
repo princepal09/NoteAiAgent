@@ -4,11 +4,14 @@ import cors from "cors";
 import errorMiddleware from "./middlewares/error.middleware";
 import helmet from "helmet";
 import { db } from "./lib/prisma";
+import { env } from "./lib/constants";
 
 const app = express();
 
 app.use(helmet());
-
+app.use(cors({
+  origin : env.CORS_ORIGIN
+}))
 app.use(express.json());
 
 app.use(cookieParser());
