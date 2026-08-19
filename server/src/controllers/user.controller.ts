@@ -3,7 +3,7 @@ import { asyncHandler } from "../utils/asyncHandler";
 import { db } from "../lib/prisma";
 import ApiError from "../utils/ApiError";
 import { comparePassword, encyrptPassword } from "../utils/auth/hash";
-import { generateAccessToken } from "../utils/auth/jwt";
+import { generateAccessToken, generateRefreshToken } from "../utils/auth/jwt";
 import { setAuthCookies } from "../utils/auth/helper";
 import ApiResponse from "../utils/ApiResponse";
 
@@ -37,7 +37,7 @@ export const registerUser = asyncHandler(
     });
     const payload = {
       id: user.id,
-      email,
+      email: user.email,
       name: user.name,
     };
     const accessToken = generateAccessToken(payload);
@@ -45,7 +45,7 @@ export const registerUser = asyncHandler(
     if (!accessToken) {
       throw new ApiError(5000, "Error while creating the accessToken");
     }
-    const refreshToken = generateAccessToken(payload);
+    const refreshToken = generateRefreshToken(payload);
     if (!refreshToken) {
       throw new ApiError(5000, "Error while creating the accessToken");
     }
@@ -82,18 +82,18 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
 
   const payload = {
     id: user.id,
-    email,
+    email: user.email,
     name: user.name,
   };
 
   const accessToken = generateAccessToken(payload);
 
   if (!accessToken) {
-    throw new ApiError(5000, "Error while creating the accessToken");
+    throw new ApiError(500, "Error while creating the accessToken");
   }
-  const refreshToken = generateAccessToken(payload);
+  const refreshToken = generateRefreshToken(payload);
   if (!refreshToken) {
-    throw new ApiError(5000, "Error while creating the accessToken");
+    throw new ApiError(500, "Error while creating the accessToken");
   }
 
   setAuthCookies(res, accessToken, refreshToken);
@@ -109,14 +109,10 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     );
 });
 
-export const changePwd = asyncHandler(async (req:Request, res:Response) => {
+// export const changePwd = asyncHandler(async (req: Request, res: Response) => {
+//   const { currentPwd, newPwd } = req.body;
 
-  const {currentPwd, newPwd} = req.body;
-
-  if(!currentPwd || !newPwd){
-    throw new ApiError(400, "Bad Request, currentPwd and newPwd is required")
-  }
-
-  
-
-})
+//   if (!currentPwd || !newPwd) {
+//     throw new ApiError(400, "Bad Request, currentPwd and newPwd is required");
+//   }
+// });

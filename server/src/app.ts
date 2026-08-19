@@ -5,22 +5,26 @@ import errorMiddleware from "./middlewares/error.middleware";
 import helmet from "helmet";
 import { db } from "./lib/prisma";
 import { env } from "./lib/constants";
-
+import authRoutes from "../src/routes/user.route";
 const app = express();
 
 app.use(helmet());
-app.use(cors({
-  origin : env.CORS_ORIGIN
-}))
+app.use(
+  cors({
+    origin: env.CORS_ORIGIN,
+  })
+);
 app.use(express.json());
 
 app.use(cookieParser());
 
-app.get("/test", async(req: Request, res: Response) => {
+app.use("/api/v1", authRoutes);
+
+app.get("/", async (req: Request, res: Response) => {
   const notes = await db.note.findMany();
 
   res.status(200).json({
-    data:notes,
+    data: notes,
     success: true,
     message: "Server is running successfully",
   });
