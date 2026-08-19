@@ -12,27 +12,27 @@ export const noteTools = [
   },
 
   {
-    name : "update_note",
-    description : "Update an existing note",
-    parameters : {
-        type : "object",
-        properties : {
-            noteId : {type : "string"},
-            content : {type : "string"},
-        },
-        required : ["noteId", "content"]
-    }
+    name: "update_note",
+    description: "Update an existing note",
+    parameters: {
+      type: "object",
+      properties: {
+        noteId: { type: "string" },
+        content: { type: "string" },
+      },
+      required: ["noteId", "content"],
+    },
   },
 
   {
-    name : "delete_note",
-    description : "Delete a node",
-    parameters : {
-        type : "object",
-        properties : {
-            noteId : {type : "string"}
-        },
-        required : ["noteId"]
-    }
-  }
+    name: "delete_note",
+    description: "Delete a node",
+    parameters: {
+      type: "object",
+      properties: {
+        noteId: { type: "string" },
+      },
+      required: ["noteId"],
+    },
+  },
 ];
