@@ -8,6 +8,7 @@ import { db } from "../lib/prisma";
 export interface MyJwtPayload extends JwtPayload {
   id: string;
 }
+
 export const verifyUser = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const accessToken =
@@ -30,6 +31,7 @@ export const verifyUser = asyncHandler(
         id: true,
         email: true,
         name: true,
+        createdAt: true,
       },
     });
 

@@ -109,10 +109,49 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     );
 });
 
-// export const changePwd = asyncHandler(async (req: Request, res: Response) => {
-//   const { currentPwd, newPwd } = req.body;
+export const logout = asyncHandler(async (req: Request, res: Response) => {
+  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
 
-//   if (!currentPwd || !newPwd) {
-//     throw new ApiError(400, "Bad Request, currentPwd and newPwd is required");
-//   }
-// });
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "User logged out successfully"));
+});
+
+export const getCurrentUser = asyncHandler(
+  async (req: Request, res: Response) => {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      throw new ApiError(400, "Not authorized");
+    }
+
+    const user = await db.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true,
+      },
+    });
+
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, user, "User fetch successfully"));
+  }
+);
+
+export const changePwd = asyncHandler(async (req: Request, res: Response) => {
+  const { currentPwd, newPwd } = req.body;
+
+  if (!currentPwd || !newPwd) {
+    throw new ApiError(400, "Bad Request, currentPwd and newPwd is required");
+  }
+});
