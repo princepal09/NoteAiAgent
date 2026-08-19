@@ -13,14 +13,9 @@ export const agentChat = asyncHandler(async (req: Request, res: Response) => {
   }
 
   const result = await runAgent(userId, message);
-
-  return res.status(200).json(
-    new ApiResponse(
-      200,
-      {
-        message: result.text,
-      },
-      "Task executed"
-    )
-  );
+  const data = result.toolResults.map((toolResult) => {
+    return toolResult.output;
+  });
+  
+  return res.status(200).json(new ApiResponse(200, data, "Task executed"));
 });

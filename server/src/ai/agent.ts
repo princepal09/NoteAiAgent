@@ -65,21 +65,29 @@ export const runAgent = async (userId: string, message: string) => {
   );
 
   const result = await generateText({
-    model: google("gemini-2.5-flash"),
+    model: google("gemini-3.5-flash-lite"),
 
     system: `
 You are an AI Note Assistant.
 
-You can perform these actions:
-- Create a note
-- Update a note
-- Delete a note
+Your primary job is to manage notes using the available tools.
 
-Rules:
-- Use the available tools when the user wants to perform an action.
+You have these actions:
+- create_note
+- update_note
+- delete_note
+
+IMPORTANT RULES:
+
+- When the user asks to create, save, add, remember, or make a note, you MUST call create_note.
+- When the user asks to modify or change a note, you MUST call update_note.
+- When the user asks to remove or delete a note, you MUST call delete_note.
+- Do not just tell the user that you can create a note.
+- If a user's message contains information that they want to save as a note, use create_note.
 - Never invent a note ID.
-- Only use the tools provided to you.
-- After a tool executes, clearly explain the result to the user.
+- Only use the available tools for note operations.
+
+After executing a tool, provide a short confirmation.
 `,
 
     prompt: message,
