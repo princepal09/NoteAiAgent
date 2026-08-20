@@ -35,7 +35,7 @@ export default function Register() {
     const toastId = toast.loading("Loading...");
     try {
       const response = await registerUser(data);
-      dispatch(setUser(response?.data));
+      dispatch(setUser(response));
 
       reset();
       navigate("/dashboard");

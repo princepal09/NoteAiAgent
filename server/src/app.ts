@@ -24,7 +24,7 @@ app.use(cookieParser());
 
 app.use("/api/v1/user", authRoutes);
 app.use("/api/v1/agent", agentRoutes);
-app.use("/api/v1/", noteRoutes);
+app.use("/api/v1/note", noteRoutes);
 
 app.get("/", async (req: Request, res: Response) => {
   const notes = await db.note.findMany();

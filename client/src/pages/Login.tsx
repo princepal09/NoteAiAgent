@@ -36,7 +36,8 @@ export default function Login() {
 
     try {
       const response = await loginUser(data);
-      dispatch(setUser(response.data));
+      // console.log("response", response);
+      dispatch(setUser(response));
       reset();
       navigate("/dashboard");
     } catch (err: any) {

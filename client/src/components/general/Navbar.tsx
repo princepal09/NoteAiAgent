@@ -14,7 +14,7 @@ export function Navbar() {
 
   const{user} = useSelector((state:RootState) => state.auth);
 
-  console.log(user);
+  console.log("user", user);
 
   const handleLogout = async () => {
     try {

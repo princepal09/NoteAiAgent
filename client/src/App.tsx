@@ -15,10 +15,10 @@ function App() {
   const loadCurrentUser = async () => {
     try {
       const response = await getCurrentUser();
-      dispatch(setUser(response.data.data));
+      dispatch(setUser(response));
     } catch (err: any) {
       console.log(err);
-      dispatch(setLogout())
+      dispatch(setLogout());
     }
   };
 
@@ -27,7 +27,7 @@ function App() {
   }, [dispatch]);
   return (
     <Routes>
-      <Route  
+      <Route
         path="/"
         element={
           <PublicRoute>
