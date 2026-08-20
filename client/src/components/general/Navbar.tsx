@@ -1,13 +1,30 @@
 import { Bot, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { logoutUser } from "@/api/auth.api";
+import { useDispatch, useSelector } from "react-redux";
+import { setLogout } from "@/store/slices/authSlice";
+import { useNavigate } from "react-router-dom";
+import { RootState } from "@/store/store";
 
 export function Navbar() {
-  const handleLogout = () => {
-    // Later:
-    // remove token
-    // navigate("/login")
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  
 
-    console.log("Logout");
+  const{user} = useSelector((state:RootState) => state.auth);
+
+  console.log(user);
+
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+      dispatch(setLogout());
+      toast.success("Logout successfully");
+      navigate("/")
+    } catch (err: any) {
+      toast.error(err);
+    }
   };
 
   return (
@@ -19,19 +36,16 @@ export function Navbar() {
             <Bot className="h-5 w-5 text-violet-400" />
           </div>
 
-          <span className="text-lg font-semibold text-white">
-            AI Notes
-          </span>
+          <span className="text-lg font-semibold text-white">AI Notes</span>
         </div>
 
         {/* Logout */}
         <Button
           variant="ghost"
-          onClick={handleLogout}
-          className="gap-2 text-zinc-400 hover:bg-white/5 hover:text-white"
+          onClick={handleLogout} 
+          className="gap-2 text-zinc-400 cursor-pointer hover:bg-white/5 hover:text-white"
         >
           <LogOut className="h-4 w-4" />
-
           Logout
         </Button>
       </div>

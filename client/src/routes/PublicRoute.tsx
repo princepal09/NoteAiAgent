@@ -14,7 +14,7 @@ const PublicRoute = ({ children }: Props) => {
   );
 
   if (loading) {
-    return <SpinnerSize/>;
+    return <SpinnerSize />;
   }
 
   if (isAuthenticated) {

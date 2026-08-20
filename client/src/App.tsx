@@ -6,7 +6,9 @@ import Dashboard from "./pages/DashboardPage";
 import { useEffect } from "react";
 import { getCurrentUser } from "./api/auth.api";
 import { useDispatch } from "react-redux";
-import { setUser } from "./store/slices/authSlice";
+import { setLogout, setUser } from "./store/slices/authSlice";
+import PublicRoute from "./routes/PublicRoute";
+import ProtectedRoute from "./routes/ProtectedRoute";
 
 function App() {
   const dispatch = useDispatch();
@@ -16,6 +18,7 @@ function App() {
       dispatch(setUser(response.data.data));
     } catch (err: any) {
       console.log(err);
+      dispatch(setLogout())
     }
   };
 
@@ -24,12 +27,40 @@ function App() {
   }, [dispatch]);
   return (
     <Routes>
-      <Route path="/" element={<Login />} />
+      <Route  
+        path="/"
+        element={
+          <PublicRoute>
+            <Login />
+          </PublicRoute>
+        }
+      />
 
-      <Route path="/login" element={<Login />} />
+      <Route
+        path="/login"
+        element={
+          <PublicRoute>
+            <Login />
+          </PublicRoute>
+        }
+      />
 
-      <Route path="/register" element={<Register />} />
-      <Route path="/dashboard" element={<Dashboard />} />
+      <Route
+        path="/register"
+        element={
+          <PublicRoute>
+            <Register />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
 
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>

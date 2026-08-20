@@ -6,7 +6,8 @@ import helmet from "helmet";
 import { db } from "./lib/prisma";
 import { env } from "./lib/constants";
 import authRoutes from "../src/routes/user.route";
-import agentRoutes from "../src/routes/agent.route"
+import agentRoutes from "../src/routes/agent.route";
+import noteRoutes from "../src/routes/note.route";
 
 const app = express();
 
@@ -14,7 +15,7 @@ app.use(helmet());
 app.use(
   cors({
     origin: env.CORS_ORIGIN,
-    credentials:true
+    credentials: true,
   })
 );
 app.use(express.json());
@@ -23,6 +24,7 @@ app.use(cookieParser());
 
 app.use("/api/v1/user", authRoutes);
 app.use("/api/v1/agent", agentRoutes);
+app.use("/api/v1/", noteRoutes);
 
 app.get("/", async (req: Request, res: Response) => {
   const notes = await db.note.findMany();
