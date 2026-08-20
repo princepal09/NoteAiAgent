@@ -27,9 +27,8 @@ export default function Login() {
     console.log(data);
 
     try {
-      // TODO: Call your backend login API here
 
-      console.log("Login data:", data);
+      const response = await 
 
       navigate("/");
     } catch (error) {

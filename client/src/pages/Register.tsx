@@ -11,9 +11,13 @@ import { Label } from "@/components/ui/label";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 
 import { registerSchema, type RegisterFormData } from "@/schemas/auth.schema";
+import { registerUser } from "@/api/auth.api";
+import { setUser } from "@/store/slices/authSlice";
+import { useDispatch } from "react-redux";
 
 export default function Register() {
   const navigate = useNavigate();
+  const dispatch = useDispatch()
 
   const {
     register,
@@ -22,18 +26,20 @@ export default function Register() {
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
   });
+  
 
   const onSubmit = async (data: RegisterFormData) => {
     console.log(data);
-
+    
+    
     try {
-      // TODO: Call your backend register API here
+      const response = await registerUser(data);
+      dispatch(setUser(response?.data));
 
-      console.log("Register data:", data);
-
-      navigate("/login");
+      navigate("/dashboard");
     } catch (error) {
       console.error(error);
+
     }
   };
 
@@ -52,8 +58,8 @@ export default function Register() {
 
             <Input
               id="name"
-              placeholder="John Doe"
-              className="pl-10"
+              placeholder="Your name"
+               className="border-white/10 bg-[#27272a] pl-10 text-white placeholder:text-zinc-500 focus-visible:ring-violet-500"
               {...register("name")}
             />
           </div>
@@ -74,7 +80,7 @@ export default function Register() {
               id="email"
               type="email"
               placeholder="you@example.com"
-              className="border-white/10 bg-[#27272a] pl-10 text-white placeholder:text-zinc-500 focus-visible:ring-violet-500"
+              className="border-white/10 bg-[#27272a] pl-10 text-white focus-visible:ring-violet-500"
               {...register("email")}
             />
           </div>
