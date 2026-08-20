@@ -10,10 +10,11 @@ export const getAllNotes = asyncHandler(async (req: Request, res: Response) => {
       message: "Unauthorized",
     });
   }
- console.log("User ID:", req.user.id);
+  console.log("User ID:", req.user.id);
   const notes = await noteService.getAll(req.user.id);
+  console.log(notes);
 
-  return res.status(200).json(
-    new ApiResponse(200, notes, "Notes fetched successfully")
-  )
+  return res
+    .status(200)
+    .json(new ApiResponse(200, notes, "Notes fetched successfully"));
 });

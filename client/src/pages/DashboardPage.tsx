@@ -1,36 +1,33 @@
-import { useState } from "react";
-import {
-  ArrowUp,
-  Bot,
-  Sparkles,
-} from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowUp, Bot, Sparkles } from "lucide-react";
 
 import { Navbar } from "@/components/general/Navbar";
 import { NoteCard } from "@/components/DashboardComponents/NoteCard";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-const demoNotes = [
-  {
-    id: "1",
-    content: "Buy groceries tomorrow",
-    completed: false,
-  },
-  {
-    id: "2",
-    content: "Finish AI Notes dashboard",
-    completed: false,
-  },
-  {
-    id: "3",
-    content: "Read about AI agents",
-    completed: true,
-  },
-];
+import { getAllNotes } from "@/api/note.api";
+import { INote } from "@/types/note.type";
 
 export default function Dashboard() {
   const [message, setMessage] = useState("");
+  const [notes, setNotes] = useState<INote[]>([]);
+
+  const loadAllNotes = async () => {
+    try {
+      const response = await getAllNotes();
+      console.log(response);
+      setNotes(response);
+    } catch (err: any) {
+      console.log(err.message);
+    }
+  };
+
+  console.log(notes);
+
+  useEffect(() => {
+    loadAllNotes();
+  }, []);
 
   const handleSend = () => {
     if (!message.trim()) return;
@@ -53,9 +50,7 @@ export default function Dashboard() {
           <div className="mb-3 flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-violet-400" />
 
-            <span className="text-sm text-violet-400">
-              AI Workspace
-            </span>
+            <span className="text-sm text-violet-400">AI Workspace</span>
           </div>
 
           <h1 className="text-3xl font-semibold tracking-tight text-white">
@@ -77,9 +72,7 @@ export default function Dashboard() {
 
               <Input
                 value={message}
-                onChange={(e) =>
-                  setMessage(e.target.value)
-                }
+                onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     handleSend();
@@ -101,9 +94,7 @@ export default function Dashboard() {
 
           {/* Example commands */}
           <div className="mt-4 flex flex-wrap gap-2">
-            <span className="text-sm text-zinc-500">
-              Try:
-            </span>
+            <span className="text-sm text-zinc-500">Try:</span>
 
             {[
               "Create a note",
@@ -123,33 +114,35 @@ export default function Dashboard() {
         </section>
 
         {/* Notes */}
-        <section>
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold text-white">
-                Your Notes
-              </h2>
+        {notes.length !== 0 ? (
+          <section>
+            <div className="mb-6 flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-semibold text-white">Your Notes</h2>
 
-              <p className="mt-1 text-sm text-zinc-500">
-                Manage your tasks and ideas.
-              </p>
+                <p className="mt-1 text-sm text-zinc-500">
+                  Manage your tasks and ideas.
+                </p>
+              </div>
+
+              <span className="rounded-full border border-white/10 bg-[#18181b] px-3 py-1 text-sm text-zinc-400">
+                {notes?.length} notes
+              </span>
             </div>
 
-            <span className="rounded-full border border-white/10 bg-[#18181b] px-3 py-1 text-sm text-zinc-400">
-              {demoNotes.length} notes
-            </span>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {demoNotes.map((note) => (
-              <NoteCard
-                key={note.id}
-                content={note.content}
-                completed={note.completed}
-              />
-            ))}
-          </div>
-        </section>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {notes?.map((note) => (
+                <NoteCard
+                  key={note.id}
+                  content={note.content}
+                  completed={note.isCompleted}
+                />
+              ))}
+            </div>
+          </section>
+        ) : (
+          <span>No Notes yet</span>
+        )}
       </main>
     </div>
   );
