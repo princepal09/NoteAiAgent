@@ -11,12 +11,18 @@ import { Label } from "@/components/ui/label";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 
 import { loginSchema, type LoginFormData } from "@/schemas/auth.schema";
+import { loginUser } from "@/api/auth.api";
+import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/store/slices/authSlice";
 
 export default function Login() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const {
     register,
+    reset,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({
@@ -26,13 +32,18 @@ export default function Login() {
   const onSubmit = async (data: LoginFormData) => {
     console.log(data);
 
+    const toastId = toast.loading("Loading...");
+
     try {
-
-      const response = await 
-
-      navigate("/");
-    } catch (error) {
-      console.error(error);
+      const response = await loginUser(data);
+      dispatch(setUser(response.data));
+      reset();
+      navigate("/dashboard");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to Login");
+      console.error(err);
+    } finally {
+      toast.dismiss(toastId);
     }
   };
 

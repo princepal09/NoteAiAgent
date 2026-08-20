@@ -14,32 +14,36 @@ import { registerSchema, type RegisterFormData } from "@/schemas/auth.schema";
 import { registerUser } from "@/api/auth.api";
 import { setUser } from "@/store/slices/authSlice";
 import { useDispatch } from "react-redux";
+import { toast } from "sonner";
 
 export default function Register() {
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
   });
-  
 
   const onSubmit = async (data: RegisterFormData) => {
     console.log(data);
-    
-    
+
+    const toastId = toast.loading("Loading...");
     try {
       const response = await registerUser(data);
       dispatch(setUser(response?.data));
 
+      reset();
       navigate("/dashboard");
-    } catch (error) {
-      console.error(error);
-
+    } catch (err: any) {
+      toast.error(err || "Failed to register");
+      console.error(err);
+    } finally {
+      toast.dismiss(toastId);
     }
   };
 
@@ -59,7 +63,7 @@ export default function Register() {
             <Input
               id="name"
               placeholder="Your name"
-               className="border-white/10 bg-[#27272a] pl-10 text-white placeholder:text-zinc-500 focus-visible:ring-violet-500"
+              className="border-white/10 bg-[#27272a] pl-10 text-white placeholder:text-zinc-500 focus-visible:ring-violet-500"
               {...register("name")}
             />
           </div>
