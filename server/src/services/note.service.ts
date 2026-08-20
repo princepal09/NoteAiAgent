@@ -10,8 +10,12 @@ export const noteService = {
     });
   },
 
-  async update(noteId: string, userId: string, content: string) {
-    return db.note.updateMany({
+  async update(
+    noteId: string,
+    userId: string,
+    content: string
+  ) {
+    return db.note.update({
       where: {
         id: noteId,
         userId,
@@ -22,7 +26,10 @@ export const noteService = {
     });
   },
 
-  async markCompleted(noteId: string, userId: string) {
+  async markCompleted(
+    noteId: string,
+    userId: string
+  ) {
     return db.note.updateMany({
       where: {
         id: noteId,
@@ -34,10 +41,21 @@ export const noteService = {
     });
   },
 
-  async delete(noteId: string, userId: string) {
+  async delete(
+    noteId: string,
+    userId: string
+  ) {
     return db.note.deleteMany({
       where: {
         id: noteId,
+        userId,
+      },
+    });
+  },
+
+  async deleteAll(userId: string) {
+    return db.note.deleteMany({
+      where: {
         userId,
       },
     });
@@ -50,6 +68,23 @@ export const noteService = {
       },
       orderBy: {
         createdAt: "desc",
+      },
+    });
+  },
+
+  async search(userId: string, query: string) {
+    return db.note.findMany({
+      where: {
+        userId,
+        content: {
+          contains: query,
+          mode: "insensitive",
+        },
+      },
+      select: {
+        id: true,
+        content: true,
+        isCompleted: true,
       },
     });
   },
