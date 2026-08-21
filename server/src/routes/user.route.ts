@@ -4,13 +4,13 @@ import {
   loginUser,
   logout,
   registerUser,
-} from "../controllers/user.controller";
-import { validate } from "../middlewares/validate.middleware";
+} from "../controllers/user.controller.js";
+import { validate } from "../middlewares/validate.middleware.js";
 import {
   registerUserSchema,
   loginUserSchema,
-} from "../validations/auth.schema";
-import { verifyUser } from "../middlewares/auth.middleware";
+} from "../validations/auth.schema.js";
+import { verifyUser } from "../middlewares/auth.middleware.js";
 const router = express.Router();
 
 router.post("/register", validate(registerUserSchema), registerUser);

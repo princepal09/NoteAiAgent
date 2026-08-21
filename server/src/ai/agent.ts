@@ -2,8 +2,8 @@ import { generateText, tool, stepCountIs } from "ai";
 import { google } from "@ai-sdk/google";
 import { z } from "zod";
 
-import { noteTools } from "./tools";
-import { noteService } from "../services/note.service";
+import { noteTools } from "./tools.js";
+import { noteService } from "../services/note.service.js";
 
 export const runAgent = async (userId: string, message: string) => {
   const tools = Object.fromEntries(

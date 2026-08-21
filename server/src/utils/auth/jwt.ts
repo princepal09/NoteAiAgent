@@ -1,5 +1,5 @@
 import jwt, { SignOptions } from "jsonwebtoken";
-import { env } from "../../lib/constants";
+import { env } from "../../lib/constants.js";
 
 interface JWTUser {
   id: string;

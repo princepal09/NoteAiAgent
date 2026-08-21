@@ -1,13 +1,13 @@
 import express, { Request, Response } from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import errorMiddleware from "./middlewares/error.middleware";
+import errorMiddleware from "./middlewares/error.middleware.js";
 import helmet from "helmet";
-import { db } from "./lib/prisma";
-import { env } from "./lib/constants";
-import authRoutes from "../src/routes/user.route";
-import agentRoutes from "../src/routes/agent.route";
-import noteRoutes from "../src/routes/note.route";
+import { db } from "./lib/prisma.js";
+import { env } from "./lib/constants.js";
+import authRoutes from "./routes/user.route.js";
+import agentRoutes from "./routes/agent.route.js";
+import noteRoutes from "./routes/note.route.js";
 
 const app = express();
 

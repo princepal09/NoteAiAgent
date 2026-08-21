@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import { asyncHandler } from "../utils/asyncHandler";
-import ApiError from "../utils/ApiError";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import ApiError from "../utils/ApiError.js";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { env } from "../lib/constants";
-import { db } from "../lib/prisma";
+import { env } from "../lib/constants.js";
+import { db } from "../lib/prisma.js";
 
 export interface MyJwtPayload extends JwtPayload {
   id: string;

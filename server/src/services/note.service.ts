@@ -1,4 +1,4 @@
-import { db } from "../lib/prisma";
+import { db } from "../lib/prisma.js";
 
 export const noteService = {
   async create(userId: string, content: string) {

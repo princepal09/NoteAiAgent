@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
-import { asyncHandler } from "../utils/asyncHandler";
-import { db } from "../lib/prisma";
-import ApiError from "../utils/ApiError";
-import { comparePassword, encyrptPassword } from "../utils/auth/hash";
-import { generateAccessToken, generateRefreshToken } from "../utils/auth/jwt";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { db } from "../lib/prisma.js";
+import ApiError from "../utils/ApiError.js";
+import { comparePassword, encyrptPassword } from "../utils/auth/hash.js";
+import { generateAccessToken, generateRefreshToken } from "../utils/auth/jwt.js";
 import {
   accessTokenCookieOptions,
   refreshTokenCookieOptions,
   setAuthCookies,
-} from "../utils/auth/helper";
-import ApiResponse from "../utils/ApiResponse";
+} from "../utils/auth/helper.js";
+import ApiResponse from "../utils/ApiResponse.js";
 
 export const registerUser = asyncHandler(
   async (req: Request, res: Response) => {

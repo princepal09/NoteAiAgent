@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { noteService } from "../services/note.service";
-import { asyncHandler } from "../utils/asyncHandler";
-import ApiResponse from "../utils/ApiResponse";
+import { noteService } from "../services/note.service.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import ApiResponse from "../utils/ApiResponse.js";
 
 export const getAllNotes = asyncHandler(async (req: Request, res: Response) => {
   if (!req.user) {
