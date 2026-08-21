@@ -20,3 +20,10 @@ export const generateRefreshToken = (payload: object): string => {
     expiresIn: env.REFRESH_TOKEN_EXPIRY as SignOptions["expiresIn"],
   });
 };
+
+// export const verifyRefreshToken = (token: string) => {
+//   return jwt.verify(
+//     token,
+//     env.JWT_TOKEN_REFRESH_SECRET as string
+//   );
+// };

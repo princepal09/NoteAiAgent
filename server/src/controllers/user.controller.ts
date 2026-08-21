@@ -4,7 +4,11 @@ import { db } from "../lib/prisma";
 import ApiError from "../utils/ApiError";
 import { comparePassword, encyrptPassword } from "../utils/auth/hash";
 import { generateAccessToken, generateRefreshToken } from "../utils/auth/jwt";
-import { setAuthCookies } from "../utils/auth/helper";
+import {
+  accessTokenCookieOptions,
+  refreshTokenCookieOptions,
+  setAuthCookies,
+} from "../utils/auth/helper";
 import ApiResponse from "../utils/ApiResponse";
 
 export const registerUser = asyncHandler(
@@ -110,8 +114,9 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const logout = asyncHandler(async (req: Request, res: Response) => {
-  res.clearCookie("accessToken");
-  res.clearCookie("refreshToken");
+  res.clearCookie("accessToken", accessTokenCookieOptions);
+
+  res.clearCookie("refreshToken", refreshTokenCookieOptions);
 
   return res
     .status(200)
@@ -155,3 +160,84 @@ export const changePwd = asyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(400, "Bad Request, currentPwd and newPwd is required");
   }
 });
+
+// export const refreshAccessToken = asyncHandler(
+//   async (req: Request, res: Response) => {
+
+//     const refreshToken = req.cookies?.refreshToken;
+
+//     if (!refreshToken) {
+//       throw new ApiError(
+//         401,
+//         "Refresh token not found. Please login again."
+//       );
+//     }
+
+//     try {
+//       const decoded = verifyRefreshToken(refreshToken) as {
+//         id: string;
+//         email: string;
+//         name: string;
+//       };
+
+//       const user = await db.user.findUnique({
+//         where: {
+//           id: decoded.id,
+//         },
+//         select: {
+//           id: true,
+//           email: true,
+//           name: true,
+//         },
+//       });
+
+//       if (!user) {
+//         throw new ApiError(401, "User no longer exists");
+//       }
+
+//       const payload = {
+//         id: user.id,
+//         email: user.email,
+//         name: user.name,
+//       };
+
+//       const newAccessToken = generateAccessToken(payload);
+
+//       if (!newAccessToken) {
+//         throw new ApiError(500, "Failed to generate access token");
+//       }
+
+//       const newRefreshToken = generateRefreshToken(payload);
+
+//       if (!newRefreshToken) {
+//         throw new ApiError(500, "Failed to generate refresh token");
+//       }
+
+//       setAuthCookies(res, newAccessToken, newRefreshToken);
+
+//       return res
+//         .status(200)
+//         .json(
+//           new ApiResponse(
+//             200,
+//             null,
+//             "Access token refreshed successfully"
+//           )
+//         );
+//     } catch (error) {
+//       console.error("Refresh token error:", error);
+
+//       res.clearCookie("accessToken");
+//       res.clearCookie("refreshToken");
+
+//       if (error instanceof ApiError) {
+//         throw error;
+//       }
+
+//       throw new ApiError(
+//         401,
+//         "Invalid or expired refresh token. Please login again."
+//       );
+//     }
+//   }
+// );
