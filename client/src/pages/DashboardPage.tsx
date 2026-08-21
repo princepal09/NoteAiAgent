@@ -1,111 +1,150 @@
 import { useEffect, useState } from "react";
-import { ArrowUp, Bot, Sparkles } from "lucide-react";
+import { ArrowUp, Loader2, X, Sparkles } from "lucide-react";
 
 import { Navbar } from "@/components/general/Navbar";
+
 import { NoteCard } from "@/components/DashboardComponents/NoteCard";
 
 import { Button } from "@/components/ui/button";
+
 import { Input } from "@/components/ui/input";
+
 import { getAllNotes } from "@/api/note.api";
+
 import { INote } from "@/types/note.type";
+
+import { toast } from "sonner";
+
+import { chatWithAgent } from "@/api/agent.api";
 
 export default function Dashboard() {
   const [message, setMessage] = useState("");
+
   const [notes, setNotes] = useState<INote[]>([]);
+
+  const [messageLoading, setMessageLoading] = useState<boolean>(false);
 
   const loadAllNotes = async () => {
     try {
       const response = await getAllNotes();
-      console.log(response);
+
       setNotes(response);
     } catch (err: any) {
       console.log(err.message);
+
+      toast.error("Failed to load notes");
     }
   };
-
-  console.log(notes);
 
   useEffect(() => {
     loadAllNotes();
   }, []);
 
-  const handleSend = () => {
-    if (!message.trim()) return;
+  const handleSend = async () => {
+    if (!message.trim() || messageLoading) return;
 
-    console.log("Send to AI:", message);
+    const currentMessage = message;
 
-    // Later:
-    // POST message to your AI agent API
+    setMessageLoading(true);
 
-    setMessage("");
+    try {
+      await chatWithAgent(currentMessage);
+
+      setMessage("");
+
+      await loadAllNotes();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to send message");
+
+      console.log(err);
+    } finally {
+      setMessageLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSend();
+    }
   };
 
   return (
-    <div className="min-h-screen bg-[#09090b]">
+    <div className="min-h-screen bg-[#0a0a0b] text-white">
       <Navbar />
 
-      <main className="mx-auto max-w-6xl px-6 py-10">
-        {/* Welcome */}
-        <section className="mb-10">
-          <div className="mb-3 flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-violet-400" />
+      <main className="mx-auto max-w-6xl px-6 py-12">
+        {/* Header */}
+        <section className="max-w-2xl">
+          <div className="flex items-center gap-2 text-sm text-zinc-500">
+            <Sparkles className="h-4 w-4 text-violet-400" />
 
-            <span className="text-sm text-violet-400">AI Workspace</span>
+            <span>Your workspace</span>
           </div>
 
-          <h1 className="text-3xl font-semibold tracking-tight text-white">
-            What would you like to do?
+          <h1 className="mt-4 text-4xl font-semibold tracking-tight">
+            Notes, without the busywork.
           </h1>
 
-          <p className="mt-2 text-zinc-400">
-            Manage your notes using natural language.
+          <p className="mt-3 max-w-xl text-[15px] leading-6 text-zinc-500">
+            Tell your assistant what you need. Create, organize, complete, or
+            remove notes using natural language.
           </p>
         </section>
 
         {/* AI Input */}
-        <section className="mb-12">
-          <div className="rounded-2xl border border-white/10 bg-[#18181b] p-3 shadow-xl">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/10">
-                <Bot className="h-5 w-5 text-violet-400" />
-              </div>
-
-              <Input
+        <section className="mt-12">
+          <div className="rounded-2xl relative border border-zinc-800 bg-zinc-900/50 p-2 transition focus-within:border-zinc-700 focus-within:bg-zinc-900">
+            <div className="flex items-center gap-4">
+              <Input 
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    handleSend();
-                  }
-                }}
-                placeholder="Try: Create a note to buy milk tomorrow..."
-                className="border-none bg-transparent text-white shadow-none placeholder:text-zinc-500 focus-visible:ring-0"
+                onKeyDown={handleKeyDown}
+                disabled={messageLoading}
+                placeholder="Ask your assistant to do something..."
+                className="h-12  border-none bg-transparent px-4 text-[15px] text-white shadow-none placeholder:text-zinc-600 focus-visible:ring-0"
               />
 
+              {message.trim() && !messageLoading && (
+                <Button 
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setMessage("")}
+                  className="h-9 w-9 shrink-0 absolute right-18 top-3 rounded-lg text-zinc-500 hover:bg-zinc-800 hover:text-red-400"
+                  aria-label="Clear message"
+                >
+                  <X className="h-4  w-4" />
+                </Button>
+              )}
+
               <Button
+                disabled={messageLoading || !message.trim()}
                 size="icon"
                 onClick={handleSend}
-                className="shrink-0 rounded-xl bg-violet-600 hover:bg-violet-500"
+                className="mr-1 h-10 w-10 shrink-0 rounded-xl bg-violet-600 transition hover:bg-violet-500 disabled:bg-zinc-800 disabled:text-zinc-600"
               >
-                <ArrowUp className="h-5 w-5" />
+                {messageLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <ArrowUp className="h-4 w-4" />
+                )}
               </Button>
             </div>
           </div>
 
-          {/* Example commands */}
-          <div className="mt-4 flex flex-wrap gap-2">
-            <span className="text-sm text-zinc-500">Try:</span>
+          {/* Suggestions */}
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <span className="mr-1 text-xs text-zinc-600">Try</span>
 
             {[
-              "Create a note",
-              "Show my notes",
-              "Mark a note as completed",
-              "Delete a note",
+              "Create a note to call mom tomorrow",
+              "Show my active notes",
+              "Complete my grocery note",
             ].map((command) => (
               <button
                 key={command}
                 onClick={() => setMessage(command)}
-                className="rounded-full border border-white/10 bg-[#18181b] px-3 py-1 text-xs text-zinc-400 transition hover:border-violet-500/40 hover:text-white"
+                className="rounded-lg px-2.5 py-1.5 text-xs text-zinc-500 transition hover:bg-zinc-900 hover:text-zinc-300"
               >
                 {command}
               </button>
@@ -114,35 +153,43 @@ export default function Dashboard() {
         </section>
 
         {/* Notes */}
-        {notes.length !== 0 ? (
-          <section>
-            <div className="mb-6 flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold text-white">Your Notes</h2>
+        <section className="mt-20">
+          <div className="flex items-end justify-between">
+            <div>
+              <h2 className="text-lg font-medium text-zinc-100">Your notes</h2>
 
-                <p className="mt-1 text-sm text-zinc-500">
-                  Manage your tasks and ideas.
-                </p>
-              </div>
-
-              <span className="rounded-full border border-white/10 bg-[#18181b] px-3 py-1 text-sm text-zinc-400">
-                {notes?.length} notes
-              </span>
+              <p className="mt-1 text-sm text-zinc-600">
+                {notes.length === 0
+                  ? "No notes yet"
+                  : `${notes.length} ${notes.length === 1 ? "note" : "notes"}`}
+              </p>
             </div>
+          </div>
 
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {notes?.map((note) => (
+          {notes.length > 0 ? (
+            <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {notes.map((note) => (
                 <NoteCard
                   key={note.id}
                   content={note.content}
                   completed={note.isCompleted}
+                  createdAt={note.createdAt}
+                  updatedAt={note.updatedAt}
                 />
               ))}
             </div>
-          </section>
-        ) : (
-          <span>No Notes yet</span>
-        )}
+          ) : (
+            <div className="mt-8 rounded-xl border border-dashed border-zinc-800 py-16 text-center">
+              <p className="text-sm text-zinc-500">
+                Your notes will appear here.
+              </p>
+
+              <p className="mt-1 text-xs text-zinc-700">
+                Try asking your assistant to create one.
+              </p>
+            </div>
+          )}
+        </section>
       </main>
     </div>
   );

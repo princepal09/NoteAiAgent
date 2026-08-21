@@ -29,7 +29,7 @@ const authSlice = createSlice({
     },
 
     setUser(state, action: PayloadAction<IUser | null>) {
-       console.log("Payload received:", action.payload);
+      //  console.log("Payload received:", action.payload);
       state.user = action.payload;
       state.isAuthenticated = true;
       state.loading = false;
